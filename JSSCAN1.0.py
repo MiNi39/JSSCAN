@@ -366,7 +366,7 @@ if __name__ == "__main__":
   ╚█████╔╝███████║███████║╚██████╗██║  ██║██║ ╚████║
    ╚════╝ ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝
                                                     
-						[JSSCAN 1.2/BY: MiNi]
+						[JSSCAN 1.0/BY: MiNi]
 	   						https://github.com/MiNi39/JSSCAN
 	""")
 	urllib3.disable_warnings()
