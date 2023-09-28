@@ -24,7 +24,6 @@ def parse_args():
     parser = argparse.ArgumentParser(epilog='\tExample: \r\npython ' + sys.argv[0] + " -u http://www.baidu.com")
     parser.add_argument("-u", "--url", help="The website")
     parser.add_argument("-c", "--cookie", help="The website cookie")
-    parser.add_argument("-f", "--file", help="The file contains url or js")
     parser.add_argument("-ou", "--outputurl", help="Output file name. ")
     parser.add_argument("-os", "--outputsubdomain", help="Output file name. ")
     parser.add_argument("-j", "--js", help="Find in js file", action="store_true")
@@ -217,7 +216,7 @@ def find_by_url(url, js = False,file = False):
 		for script in script_array:
 			if script not in script_all:
 				script_all.add(script)
-				print("JS调试输出:"+script)
+				print(script)
 				temp_urls = extract_URL(script_array[script])
 				if len(temp_urls) == 0: continue
 				for temp_url in temp_urls:
@@ -371,42 +370,40 @@ if __name__ == "__main__":
 	""")
 	urllib3.disable_warnings()
 	args = parse_args()
-	
-	if args.file is None:
-		urls = find_by_url(http_host(args.url))
-		if args.deep is None:
-			giveresult(urls, args.url)
-		elif args.deep == 1:
+	urls = find_by_url(http_host(args.url))
+	if args.deep is None:
+		giveresult(urls, args.url)
+	elif args.deep == 1:
+		scanned_urls.update(urls)
+		crawl_new_urls(args.url)
+		giveresult(scanned_urls, args.url)
+	elif args.deep == 2:
+		while True:
 			scanned_urls.update(urls)
 			crawl_new_urls(args.url)
-			giveresult(scanned_urls, args.url)
-		elif args.deep == 2:
-			while True:
+			all_scanned_urls = scanned_urls.union(scanned_subdomains)
+			crawl_new_urls(all_scanned_urls)
+				
+			if len(all_scanned_urls) == len(scanned_subdomains):
+				break
+			scanned_subdomains.update(scanned_urls)
+		giveresult(all_scanned_urls, args.url)
+	elif args.deep == 3:
+		while True:
+
+			if urls is not None:
 				scanned_urls.update(urls)
-				crawl_new_urls(args.url)
-				all_scanned_urls = scanned_urls.union(scanned_subdomains)
-				crawl_new_urls(all_scanned_urls)
-				
-				if len(all_scanned_urls) == len(scanned_subdomains):
-					break
-				scanned_subdomains.update(scanned_urls)
-			giveresult(all_scanned_urls, args.url)
-		elif args.deep == 3:
-			while True:
-
-				if urls is not None:
-					scanned_urls.update(urls)
-				else:
-					print("连错错误或页面无数据")
-				scanned_deep.update(scanned_urls)
-				crawl_new_urls(scanned_urls)
-				scanned_subdomains.update(scanned_deep)
-				all_scanned_urls = scanned_urls.union(scanned_subdomains)
-				if len(all_scanned_urls) == len(scanned_subdomains):
-					break
+			else:
+				print("连错错误或页面无数据")
+			scanned_deep.update(scanned_urls)
+			crawl_new_urls(scanned_urls)
+			scanned_subdomains.update(scanned_deep)
+			all_scanned_urls = scanned_urls.union(scanned_subdomains)
+			if len(all_scanned_urls) == len(scanned_subdomains):
+				break
 				
 
-			giveresult(all_scanned_urls, args.url)
+		giveresult(all_scanned_urls, args.url)
 
 			
 		
