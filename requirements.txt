@@ -1,0 +1,5 @@
+requests==2.26.0
+argparse==1.4.0
+urllib3==1.26.7
+beautifulsoup4==4.10.0
+openpyxl==3.0.9
