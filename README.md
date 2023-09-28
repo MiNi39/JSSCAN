@@ -20,7 +20,6 @@ python JSSCAN1.0.py -u http://www.test.com
 
 深入爬取分为三档 分别为 -d 1  -d 2 -d 3 (d1 d2数量较大时 d3爬取会相对费时间 建议先d 1 d 2 判断网页URL情况)
 
-推荐先使用d1 d2 来进行判断网站URL数量 若数量较大 d3会消耗时间更长
 
 ```
 python JSSCAN1.0.py -u http://www.test.com -d 1
