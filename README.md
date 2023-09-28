@@ -1,6 +1,6 @@
 # JSSCAN
 
-JSSCAN是一款基于Jsfnder基础上二开工具用作快速在网站的js文件中提取URL的工具
+JSSCAN是一款基于Jsfinder基础上二开工具用作快速在网站的js文件中提取URL的工具
 
 提取URL的正则部分使用的是[LinkFinder](https://github.com/GerbenJavado/LinkFinder)
 
@@ -20,7 +20,7 @@ python JSSCAN1.0.py -u http://www.test.com
 
 深入爬取分为三档 分别为 -d 1  -d 2 -d 3
 
-推荐先使用d1 d2 来进行判断网站URL数量 若数量较大 d3会消耗更长
+推荐先使用d1 d2 来进行判断网站URL数量 若数量较大 d3会消耗时间更长
 
 ```
 python JSSCAN1.0.py -u http://www.test.com -d 1
