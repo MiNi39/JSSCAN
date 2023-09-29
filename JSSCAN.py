@@ -28,7 +28,9 @@ def parse_args():
     parser.add_argument("-os", "--outputsubdomain", help="Output file name. ")
     parser.add_argument("-j", "--js", help="Find in js file", action="store_true")
     parser.add_argument("-d", "--deep", type=int, choices=[1, 2, 3], help="Deep find (1, 2,3)")
+    parser.add_argument("-all", "--all", help="Find all URLs", action="store_true")
     return parser.parse_args()
+
 
 def extract_URL(JS):
 	pattern_raw = r"""
@@ -99,64 +101,63 @@ def Extract_html(URL):
 def process_domain_url(URL, re_URL):
 	black_url = ["javascript:"]
 	URL_raw = urlparse(URL)
-	Api_raw = urlparse(re_URL)
-	ab_URL = URL_raw.netloc
-	host_URL = URL_raw.scheme
 	dir_URL = URL_raw.path
-	api_URL = Api_raw.path
+
+	args_url_parts = urlparse(args.url)
+	args_domain = args_url_parts.scheme + "://" + args_url_parts.netloc
+
 	if re_URL[0:2] == "//":
-		result = host_URL  + "://" + ab_URL+"/"+api_URL
+		result = args_domain+"/"+re_URL
 	elif re_URL[0:4] == "http":
 		result = re_URL
 	elif re_URL[0:2] != "//" and re_URL not in black_url:
 		if re_URL[0:1] == "/":
-			result = host_URL + "://" + ab_URL + re_URL
+			result = args_domain + re_URL
 		else:
 			if re_URL[0:1] == ".":
 				if re_URL[0:3] == "../":
 					segments = dir_URL.split('/')
 					base_dir = '/'.join(segments[:-2])
-					result = host_URL + "://" + ab_URL + base_dir + '/' + re_URL[3:]
+					result = args_domain + base_dir + '/' + re_URL[3:]
 				else:
-					result = host_URL + "://" + ab_URL + re_URL[1:]
+					result = args_domain + re_URL[1:]
 			else:
-				result = host_URL + "://" + ab_URL + "/" + re_URL
+				result = args_domain + "/" + re_URL
 	else:
 		result = URL
 	return result
 
 def process_url(URL, re_URL):
-	black_url = ["javascript:"]
-	URL_raw = urlparse(URL)
-	ab_URL = URL_raw.netloc
-	host_URL = URL_raw.scheme
-	dir_URL = URL_raw.path
-	if re_URL[0:2] == "//":
-		result = host_URL  + ":" + re_URL
-	elif re_URL[0:4] == "http":
-		result = re_URL
-	elif re_URL[0:2] != "//" and re_URL not in black_url:
-		if re_URL[0:1] == "/":
-			result = host_URL + "://" + ab_URL + re_URL
-		else:
-			if re_URL[0:1] == ".":
-				if re_URL[0:3] == "../":
-					segments = dir_URL.split('/')
-					base_dir = '/'.join(segments[:-2])
-					result = host_URL + "://" + ab_URL + base_dir + '/' + re_URL[3:]
-				else:
-					result = host_URL + "://" + ab_URL + re_URL[1:]
-			else:
-				result = host_URL + "://" + ab_URL + "/" + re_URL
-	else:
-		result = URL
-	return result
+    black_url = ["javascript:"]  # Add some keywords for filtering URLs.
+    URL_raw = urlparse(URL)
+    dir_URL = URL_raw.path
+    if re_URL[0:2] == "//":
+        result = urlparse(URL).scheme + ":" + re_URL
+    elif re_URL[0:4] == "http":
+        result = re_URL
+    elif re_URL[0:2] != "//" and re_URL not in black_url:
+        if re_URL[0:1] == "/":
+            result =urlparse(URL).scheme + "://" + urlparse(URL).netloc + re_URL
+        else:
+            if re_URL[0:1] == ".":
+                if re_URL[0:3] == "../":
+                    segments = dir_URL.split('/')
+                    base_dir = '/'.join(segments[:-2])
+                    result = urlparse(URL).scheme + "://" + urlparse(URL).netloc + base_dir + '/' + re_URL[3:]
+                else:
+                    result = urlparse(URL).scheme + "://" + urlparse(URL).netloc + re_URL[1:]
+            else:
+                result = urlparse(URL).scheme + "://" + urlparse(URL).netloc + "/" + re_URL
+    else:
+        result = URL
+    return result
+
 
 def crawl_and_explore(url):
     global scanned_urls
     new_urls = find_by_url(url)
     if new_urls is not None:
-        with lock:
+        with lock: 
             scanned_urls.update(new_urls)
 
 def crawl_new_urls(url):
@@ -188,18 +189,16 @@ def http_host(url):
 		url = "http"+"://"+url
 	return url
 
-def find_by_url(url, js = False,file = False):
+def find_by_url(url, js = False):
 	if js == False:
 		try:
 			print("url:" + url)
 		except:
 			print("Please specify a URL like https://www.baidu.com")
 		html_raw = Extract_html(url)
-		# process_url(url, ",".join(html_api))
 		if html_raw == None: 
 			print("Fail to access " + url)
 			return None
-		#print(html_raw)
 		html_new = "<html>" + html_raw + "</html>"
 		html = BeautifulSoup(html_new, "html.parser")
 		html_scripts = html.findAll("script")
@@ -221,14 +220,21 @@ def find_by_url(url, js = False,file = False):
 				if len(temp_urls) == 0: continue
 				for temp_url in temp_urls:
 					temp2 = urlparse(temp_url)
-					if file == True:
-						if not any(temp2.path.endswith(extension) for extension in ['vue','.exe', '.png', '.jpg', '.svg','css','gif']) and '@' not in temp2.path:
-							allurls.append(process_domain_url(http_host(url), temp_url))
-					else:
-						if not any(temp2.path.endswith(extension) for extension in ['vue','.exe', '.png', '.jpg', '.svg','css','gif']) and '@' not in temp2.path:
+					if not any(temp2.path.endswith(extension) for extension in ['vue','.exe', '.png', '.jpg', '.svg','css','gif']) and '@' not in temp2.path:
+						if args.all:
 							allurls.append(process_domain_url(http_host(args.url), temp_url))
-					if not any(temp2.path.endswith(extension) for extension in ['vue','gif','css','.exe', '.png', '.jpg', '.svg']) and '@' not in temp2.path:
-						allurls.append(process_url(script, temp_url))
+							allurls.append(process_url(script, temp_url))
+						else:
+							urls = process_url(script, temp_url)
+							if str(urls).endswith(".js"):
+								allurls.append(urls)
+							elif urlparse(args.url).netloc == urlparse(urls).netloc:
+								allurls.append(urls)
+							apis = process_domain_url(args.url, temp_url)
+							if str(apis).endswith(".js"):
+								allurls.append(apis)
+							elif urlparse(args.url).netloc == urlparse(apis).netloc:
+								allurls.append(apis)
 		result = []
 		for singerurl in allurls:
 			url_raw = urlparse(url)
@@ -243,6 +249,9 @@ def find_by_url(url, js = False,file = False):
 					result.append(singerurl)
 		return result
 	return sorted(set(extract_URL(Extract_html(url)))) or None
+
+
+
 
 def find_subdomain(urls, mainurl):
 	url_raw = urlparse(mainurl)
@@ -264,12 +273,12 @@ def is_alive(url):
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.108 Safari/537.36",
-            "Referer": "https://www.google.com/",
+            "Referer": "https://www.google.com/", 
 			"Cookie": args.cookie,
         }
         response = requests.get(url, headers=headers, timeout=5, allow_redirects=False, verify=False)
         
-
+ 
         status_code = response.status_code
         content_length = len(response.content)
 
@@ -345,8 +354,8 @@ def giveresult(urls, domain):
 def read_txt_file(file_path):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
-            lines = file.readlines()
-            return [line.strip() for line in lines]
+            lines = file.readlines() 
+            return [line.strip() for line in lines] 
     except FileNotFoundError:
         print(f"File not found: {file_path}")
         return []
@@ -365,8 +374,7 @@ if __name__ == "__main__":
   ╚█████╔╝███████║███████║╚██████╗██║  ██║██║ ╚████║
    ╚════╝ ╚══════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝
                                                     
-						[JSSCAN 1.0/BY: MiNi]
-	   						https://github.com/MiNi39/JSSCAN
+						[JSSCAN 1.1/BY: MiNi]
 	""")
 	urllib3.disable_warnings()
 	args = parse_args()
@@ -404,7 +412,4 @@ if __name__ == "__main__":
 				
 
 		giveresult(all_scanned_urls, args.url)
-
-			
-		
 
