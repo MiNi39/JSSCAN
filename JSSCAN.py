@@ -128,7 +128,7 @@ def process_domain_url(URL, re_URL):
 	return result
 
 def process_url(URL, re_URL):
-    black_url = ["javascript:"]  # Add some keywords for filtering URLs.
+    black_url = ["javascript:"]
     URL_raw = urlparse(URL)
     dir_URL = URL_raw.path
     if re_URL[0:2] == "//":
@@ -410,7 +410,5 @@ if __name__ == "__main__":
 			all_scanned_urls = scanned_urls.union(scanned_subdomains)
 			if len(all_scanned_urls) == len(scanned_subdomains):
 				break
-				
-
 		giveresult(all_scanned_urls, args.url)
 
