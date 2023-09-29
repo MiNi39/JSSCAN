@@ -52,7 +52,7 @@ python JSSCAN.py -u http://e.mi.com
 
 
 
-<img src="C:\Users\x\AppData\Roaming\Typora\typora-user-images\image-20230929222816211.png" alt="image-20230929222816211" style="zoom:67%;" />
+<img src="C:\Users\x\AppData\Roaming\Typora\typora-user-images\image-20230929222816211.png" alt="image-20230929222816211" style="zoom: 50%;" />
 
 ```
 python JSSCAN.py -u http://e.mi.com -all
@@ -60,7 +60,7 @@ python JSSCAN.py -u http://e.mi.com -all
 
 -all 将此站点引用的URL也进行了输出 推荐先使用普通爬取 -u www.xxx.com -d 2 或者 -d 1  来进行网站URL初步探测 逐步深入判断效果最佳
 
-<img src="C:\Users\x\AppData\Roaming\Typora\typora-user-images\image-20230929222842495.png" alt="image-20230929222842495" style="zoom:67%;" />
+<img src="C:\Users\x\AppData\Roaming\Typora\typora-user-images\image-20230929222842495.png" alt="image-20230929222842495" style="zoom: 50%;" />
 
 
 
