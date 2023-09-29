@@ -66,3 +66,12 @@ python JSSCAN.py -u http://e.mi.com -d 2 -all
 
 
 
+```
+python JSSCAN.py -u http://e.mi.com -d 3 -all
+```
+
+![image](https://github.com/MiNi39/JSSCAN/blob/main/img/5.jpg)
+
+结果
+
+![image](https://github.com/MiNi39/JSSCAN/blob/main/img/6.jpg)
