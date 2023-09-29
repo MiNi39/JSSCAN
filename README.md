@@ -16,7 +16,7 @@ python JSSCAN.py -u http://www.test.com
 
 **完全爬取**
 
-会爬取站点引用外部的URL 并且在结果中输出
+会爬取站点引用外部的URL和站点URL汇总在结果中输出
 
 ```
 python JSSCAN.py -u http://www.test.com -all
@@ -24,7 +24,7 @@ python JSSCAN.py -u http://www.test.com -all
 
 **深入爬取**
 
-深入爬取分为三档 分别为 -d 1  -d 2 -d 3 (d1 d2数量较大时 d3爬取会相对费时间 建议先d 1 d 2 判断网页URL情况) -all爬取网页应用的外部URL
+深入爬取分为三档 分别为 -d 1  -d 2 -d 3 (d1 d2数量较大时 d3爬取会相对费时间 建议先d 1 d 2 判断网页URL情况) -all爬取网页引用的外部URL和站点URL
 
 ```
 python JSSCAN.py -u http://www.test.com -d 1
