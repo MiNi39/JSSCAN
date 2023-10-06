@@ -290,7 +290,6 @@ def check_url_alive(url, results, lock):
     status_code, content_length = is_alive(url)
     status_code = status_code if status_code is not None else "N/A"
     content_length = content_length if content_length is not None else "N/A"
-    
     with lock:
         if status_code == 200:
             print(url + "\033[32m" + f"(Length: {content_length}, Status Code: {status_code})\033[0m")
@@ -325,8 +324,10 @@ def giveresult(urls, domain):
     ws.append(["URL", "Status Code", "Content Size"])
 
     for url, (status_code, content_length) in alive_urls.items():
-        content_url = f"{url} (Length: {content_length}, Status Code: {status_code})"
-        ws.append([url, status_code, content_length])
+        try:
+            ws.append([url, status_code, content_length])
+        except Exception as e:
+            print(f"Error occurred while appending to Excel: {e}")
 
     subdomains = find_subdomain(urls, domain)
 
